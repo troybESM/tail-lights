@@ -1,4 +1,4 @@
-service: sls-py-demo
+service: oco-tl
 frameworkVersion: "3"
 
 params:
@@ -8,7 +8,7 @@ params:
         ENABLE_TIME_TRIGGER: false
     default:
         # This is mostly an example of how to use params for envs
-        DEMO_BUCKET: generic.bucket.for.testing
+        # DEMO_BUCKET: generic.bucket.for.testing
         ENABLE_TIME_TRIGGER: false
 
 #Config and Default Lambda Settings
