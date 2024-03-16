@@ -41,46 +41,47 @@ def add_show(show, request_id):
     response = table.put_item(
         Item={
             'pk': f'SHOW#{request_id}',
-            'sk': f'SHOW#<date>',
+            'sk': f'SHOW#{show['date']}',
             'approved': False,
             'active': True,
-            'date': '',
-            'location': {
-                'address': '',
-                'city': '',
-                'state': '',
-                'zip': ''
-            },
-            'description': description,
-            'eventTimes': {
-                'reg': '',
-                'awards': ''
-            },
-            'contact': {
-                'name': '',
-                'email': '',
-                'addr': '',
-                'site': ''
-            },
-            'socialLinks': {
-                'fb': '',
-                'x': '',
-                'insta': '',
-                'mast': ''
-            },
-            'sponsors': [
-                {
-                    'name': '',
-                    'links': ''
-                }
-            ],
-            'GSI1PK': 'SHOW',
-            'GSI1SK': f'SHOW#{request_id}',
-            'GSI1Data': {
-                'description': description[0:100],
-                'date': '',
-                'location': '',
-            },
+            **show
+            # 'date': '',
+            # 'location': {
+            #     'address': '',
+            #     'city': '',
+            #     'state': '',
+            #     'zip': ''
+            # },
+            # 'description': description,
+            # 'eventTimes': {
+            #     'reg': '',
+            #     'awards': ''
+            # },
+            # 'contact': {
+            #     'name': '',
+            #     'email': '',
+            #     'addr': '',
+            #     'site': ''
+            # },
+            # 'socialLinks': {
+            #     'fb': '',
+            #     'x': '',
+            #     'insta': '',
+            #     'mast': ''
+            # },
+            # 'sponsors': [
+            #     {
+            #         'name': '',
+            #         'links': ''
+            #     }
+            # ],
+            # 'GSI1PK': 'SHOW',
+            # 'GSI1SK': f'SHOW#{request_id}',
+            # 'GSI1Data': {
+            #     'description': description[0:100],
+            #     'date': '',
+            #     'location': '',
+            # },
             # 'TTL': TTL
         }
     )
