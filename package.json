@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@serverless/compose": "github:serverless/compose",
+    "serverless": "^3.38.0",
+    "serverless-better-credentials": "^2.0.0",
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-plugin-resource-tagging": "^1.2.0",
+    "serverless-python-requirements": "^6.0.1"
+  }
+}

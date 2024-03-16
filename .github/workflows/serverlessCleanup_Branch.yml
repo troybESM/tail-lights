@@ -1,0 +1,44 @@
+name: Serverless Cleanup on Branch Delete
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+on:
+  delete:
+  workflow_dispatch:
+
+# Specify what jobs to run
+jobs:
+  CleanUp:
+    name: Cleanup Feature Branch
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo  ${{ github.ref}}
+      
+      - run: |
+          echo "Ref_type  ${{ github.event.ref_type }}"
+          echo "From branch  ${{ github.event.ref }}"
+          echo "To branch ${{ github.ref}}"
+          BRANCH="$(echo ${{ github.event.ref}} | sed 's/\//-/g')"
+          BRANCH="${BRANCH,,}"
+          echo "BRANCH is $BRANCH"
+          echo "STAGE=$BRANCH" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+      
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{vars.DEPLOYROLE}}
+          role-session-name: serverless-python-demo
+          aws-region: us-east-2
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Serverless/Plugins
+        run: npm ci
+
+      - name: Serverless Remove
+        run: npx serverless remove --stage dev-$STAGE      
