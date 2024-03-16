@@ -84,6 +84,8 @@ functions:
     addShow:
         handler: src/shows.add
         description: Adds a show
+        environment:
+            TABLE: !Ref OCODynamoTable
         events:
             - http:
                   path: /shows/add
@@ -202,7 +204,7 @@ plugins:
 resources:
     Resources:
         # Dynamodb
-        DemoDynamoTable:
+        OCODynamoTable:
             # WARNING! This table will be deleted with the rest of the stack taking your data with it.
             # It is recommended that you don't store critical data here. If you want your ddb here you
             # can use serverless-compose and split your infra into a different stack.
