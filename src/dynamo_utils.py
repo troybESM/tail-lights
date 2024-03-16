@@ -81,7 +81,7 @@ def add_show(show, request_id):
                 'date': '',
                 'location': '',
             },
-            'TTL': TTL
+            # 'TTL': TTL
         }
     )
     logger.info(f"Added Item: {response}")
