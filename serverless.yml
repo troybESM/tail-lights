@@ -47,7 +47,6 @@ provider:
 
     iam: # These are the permission that your lambdas will have.
         role:
-            name: sls-python-demo-${self:provider.stage}-lambda
             statements:
                 - Effect: Allow
                   Action:
