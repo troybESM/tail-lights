@@ -25,14 +25,14 @@ provider:
         application: ${self:service}
         environment: ${self:provider.stage}
         ManagedBy: Serverless Framework
-    http:
-        authorizers:
-            customAuthorizer:
-                type: request
-                functionName: customAuthorizer
-                # A lot of older examples use payload v1.0, but it is easy to convert.
-                # https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
-                # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    # http:
+    #     authorizers:
+    #         customAuthorizer:
+    #             type: request
+    #             functionName: customAuthorizer
+    # A lot of older examples use payload v1.0, but it is easy to convert.
+    # https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
+    # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
     # apiGateway:
     #   resourcePolicy:
     #     - Effect: Allow
@@ -218,8 +218,6 @@ resources:
                     - AttributeName: GSI1PK
                       AttributeType: S
                     - AttributeName: GSI1SK
-                      AttributeType: S
-                    - AttributeName: GSI1DATA
                       AttributeType: S
                 BillingMode: PAY_PER_REQUEST
                 KeySchema: # Required
