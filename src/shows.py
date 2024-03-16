@@ -34,10 +34,11 @@ def get_all(event, context):
 @logger.inject_lambda_context
 def add(event, context):
     logger.info(f"add function event is {event}")
+    logger.info(f"add function context is {context}")
 
     show = event.get('pathParameters', {}).get('show')
     logger.info(f"show is: {show}")
-    response = add_show(show)
+    response = add_show(show, request_id=context.aws_request_id)
     logger.info(f"response is {response}")
     body = {
         "message": f"Added show! "
