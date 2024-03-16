@@ -2,94 +2,94 @@ service: oco-tl
 frameworkVersion: "3"
 
 params:
-    dev:
-        ENABLE_TIME_TRIGGER: false
-    prod:
-        ENABLE_TIME_TRIGGER: false
-    default:
-        # This is mostly an example of how to use params for envs
-        # DEMO_BUCKET: generic.bucket.for.testing
-        ENABLE_TIME_TRIGGER: false
+	dev:
+		ENABLE_TIME_TRIGGER: false
+	prod:
+		ENABLE_TIME_TRIGGER: false
+	default:
+		# This is mostly an example of how to use params for envs
+		# DEMO_BUCKET: generic.bucket.for.testing
+		ENABLE_TIME_TRIGGER: false
 
 #Config and Default Lambda Settings
 provider:
-    name: aws
-    runtime: python3.11
-    stage: ${opt:stage, 'dev'} # The github actions pipeline will pass the branch name as the stage
-    region: ${opt:region, 'us-east-2'}
-    deploymentBucket:
-        name: ${aws:accountId}-serverless
-    timeout: 29
-    memorySize: 256
-    stackTags:
-        application: ${self:service}
-        environment: ${self:provider.stage}
-        ManagedBy: Serverless Framework
-    # http:
-    #     authorizers:
-    #         customAuthorizer:
-    #             type: request
-    #             functionName: customAuthorizer
-    # A lot of older examples use payload v1.0, but it is easy to convert.
-    # https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
-    # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-    # apiGateway:
-    #   resourcePolicy:
-    #     - Effect: Allow
-    #       Principal: "*"
-    #       Action: execute-api:Invoke
-    #       Resource:
-    #         - execute-api:/*/*/*
-    #       Condition:
-    #         IpAddress:
-    #           aws:SourceIp:
-    #             - ""
+	name: aws
+	runtime: python3.11
+	stage: ${opt:stage, 'dev'} # The github actions pipeline will pass the branch name as the stage
+	region: ${opt:region, 'us-east-2'}
+	deploymentBucket:
+		name: ${aws:accountId}-serverless
+	timeout: 29
+	memorySize: 256
+	stackTags:
+		application: ${self:service}
+		environment: ${self:provider.stage}
+		ManagedBy: Serverless Framework
+	# http:
+	#     authorizers:
+	#         customAuthorizer:
+	#             type: request
+	#             functionName: customAuthorizer
+	# A lot of older examples use payload v1.0, but it is easy to convert.
+	# https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
+	# https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+	# apiGateway:
+	#   resourcePolicy:
+	#     - Effect: Allow
+	#       Principal: "*"
+	#       Action: execute-api:Invoke
+	#       Resource:
+	#         - execute-api:/*/*/*
+	#       Condition:
+	#         IpAddress:
+	#           aws:SourceIp:
+	#             - ""
 
-    iam: # These are the permission that your lambdas will have.
-        role:
-            statements:
-                - Effect: Allow
-                  Action:
-                      - "dynamodb:Get*"
-                      - "dynamodb:Put*"
-                      - "dynamodb:Update*"
-                      - "dynamodb:Query"
-                      - "dynamodb:Scan"
-                  Resource:
-                      - !GetAtt DemoDynamoTable.Arn
-                      # - !Join ["/", [!GetAtt DemoDynamoTable.Arn, index/*]] # Need query access to index
+	iam: # These are the permission that your lambdas will have.
+		role:
+			statements:
+				- Effect: Allow
+				  Action:
+					  - "dynamodb:Get*"
+					  - "dynamodb:Put*"
+					  - "dynamodb:Update*"
+					  - "dynamodb:Query"
+					  - "dynamodb:Scan"
+				  Resource:
+					  - !GetAtt DemoDynamoTable.Arn
+					  # - !Join ["/", [!GetAtt DemoDynamoTable.Arn, index/*]] # Need query access to index
 
 custom:
-    deploymentBucket:
-        blockPublicAccess: true
-        tags:
-            - Key: Name
-              Value: ${self:provider.deploymentBucket.name}
-            - Key: environment
-              Value: ${self:provider.stage}
-    pythonRequirements:
-        dockerizePip: non-linux
+	deploymentBucket:
+		blockPublicAccess: true
+		tags:
+			- Key: Name
+			  Value: ${self:provider.deploymentBucket.name}
+			- Key: environment
+			  Value: ${self:provider.stage}
+	pythonRequirements:
+		dockerizePip: non-linux
 
 functions:
-    customAuthorizer:
-        handler: src/custom_authorizer.handler
-        description: This function serves as an example of custom authorizers
-    getShows:
-        handler: src/shows.get_all
-        description: Returns all shows
-        events:
-            - http:
-                  path: /shows
-                  method: GET
-    addShow:
-        handler: src/shows.add
-        description: Adds a show
-        environment:
-            TABLE: !Ref OCODynamoTable
-        events:
-            - http:
-                  path: /shows/add
-                  method: POST
+	customAuthorizer:
+		handler: src/custom_authorizer.handler
+		description: This function serves as an example of custom authorizers
+	getShows:
+		handler: src/shows.get_all
+		description: Returns all shows
+		events:
+			- http:
+				  path: /shows
+				  method: GET
+	addShow:
+		handler: src/shows.add
+		description: Adds a show
+		environment:
+			TABLE: !Ref OCODynamoTable
+		events:
+			- http:
+				  path: /shows/add
+				  method: POST
 #   # API Gateway
 #   Api:
 #     handler: src/api_handler.hello
@@ -196,51 +196,51 @@ functions:
 # TODO LAMBDA behind Cognito auth
 
 plugins:
-    - serverless-better-credentials
-    - serverless-deployment-bucket
-    - serverless-plugin-resource-tagging
-    - serverless-python-requirements
+	- serverless-better-credentials
+	- serverless-deployment-bucket
+	- serverless-plugin-resource-tagging
+	- serverless-python-requirements
 
 resources:
-    Resources:
-        # Dynamodb
-        OCODynamoTable:
-            # WARNING! This table will be deleted with the rest of the stack taking your data with it.
-            # It is recommended that you don't store critical data here. If you want your ddb here you
-            # can use serverless-compose and split your infra into a different stack.
-            Type: AWS::DynamoDB::Table
-            Properties:
-                TableName: oco-${self:provider.stage}
-                AttributeDefinitions:
-                    - AttributeName: pk
-                      AttributeType: S
-                    - AttributeName: sk
-                      AttributeType: S
-                    - AttributeName: GSI1PK
-                      AttributeType: S
-                    - AttributeName: GSI1SK
-                      AttributeType: S
-                BillingMode: PAY_PER_REQUEST
-                KeySchema: # Required
-                    - AttributeName: pk
-                      KeyType: HASH
-                    - AttributeName: sk
-                      KeyType: RANGE
-                PointInTimeRecoverySpecification:
-                    PointInTimeRecoveryEnabled: true
-                StreamSpecification:
-                    StreamViewType: NEW_AND_OLD_IMAGES
-                TimeToLiveSpecification:
-                    AttributeName: TTL
-                    Enabled: true
-                GlobalSecondaryIndexes:
-                    - IndexName: GSI1
-                      KeySchema:
-                          - AttributeName: GSI1PK
-                            KeyType: HASH
-                          - AttributeName: GSI1SK
-                            KeyType: RANGE
-                      Projection:
-                          ProjectionType: INCLUDE
-                          NonKeyAttributes:
-                              - GSI1DATA
+	Resources:
+		# Dynamodb
+		OCODynamoTable:
+			# WARNING! This table will be deleted with the rest of the stack taking your data with it.
+			# It is recommended that you don't store critical data here. If you want your ddb here you
+			# can use serverless-compose and split your infra into a different stack.
+			Type: AWS::DynamoDB::Table
+			Properties:
+				TableName: oco-${self:provider.stage}
+				AttributeDefinitions:
+					- AttributeName: pk
+					  AttributeType: S
+					- AttributeName: sk
+					  AttributeType: S
+					- AttributeName: GSI1PK
+					  AttributeType: S
+					- AttributeName: GSI1SK
+					  AttributeType: S
+				BillingMode: PAY_PER_REQUEST
+				KeySchema: # Required
+					- AttributeName: pk
+					  KeyType: HASH
+					- AttributeName: sk
+					  KeyType: RANGE
+				PointInTimeRecoverySpecification:
+					PointInTimeRecoveryEnabled: true
+				StreamSpecification:
+					StreamViewType: NEW_AND_OLD_IMAGES
+				TimeToLiveSpecification:
+					AttributeName: TTL
+					Enabled: true
+				GlobalSecondaryIndexes:
+					- IndexName: GSI1
+					  KeySchema:
+						  - AttributeName: GSI1PK
+							KeyType: HASH
+						  - AttributeName: GSI1SK
+							KeyType: RANGE
+					  Projection:
+						  ProjectionType: INCLUDE
+						  NonKeyAttributes:
+							  - GSI1DATA
