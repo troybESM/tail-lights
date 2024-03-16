@@ -40,7 +40,7 @@ def add_show(show, request_id):
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
         Item={
-            'pk': f'SHOW#{count_response['Attributes']['number']}',
+            'pk': f'SHOW#{count_response["Attributes"]["number"]}',
             'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
