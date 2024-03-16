@@ -35,8 +35,9 @@ def get_all(event, context):
 def add(event, context):
     logger.info(f"add function event is {event}")
     logger.info(f"add function context is {context}")
-
-    show = event.get('body', {}).get('show')
+    body = event.get('body')
+    show = body.get('show')
+    logger.info(f"body is: {body}")
     logger.info(f"show is: {show}")
     response = add_show(show, request_id=context.aws_request_id)
     logger.info(f"response is {response}")
