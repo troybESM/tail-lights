@@ -41,9 +41,16 @@ def add_show(show, request_id):
     response = table.put_item(
         Item={
             'pk': f'SHOW#{request_id}',
-            'sk': f'SHOW#{show['date']}',
+            'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
+            'GSI1PK': 'SHOW',
+            'GSI1SK': f'SHOW#{request_id}',
+            'GSI1Data': {
+                'description': show['description'][0:100],
+                'date': show['date'],
+                'location': show['location'],
+            },
             **show
             # 'date': '',
             # 'location': {
@@ -74,14 +81,7 @@ def add_show(show, request_id):
             #         'name': '',
             #         'links': ''
             #     }
-            # ],
-            # 'GSI1PK': 'SHOW',
-            # 'GSI1SK': f'SHOW#{request_id}',
-            # 'GSI1Data': {
-            #     'description': description[0:100],
-            #     'date': '',
-            #     'location': '',
-            # },
+            # ]
             # 'TTL': TTL
         }
     )
