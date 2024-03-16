@@ -34,13 +34,13 @@ def add_show(show, request_id):
         },
         ReturnValues="UPDATED_NEW"
     )
-
+    
     # Store new Item
     description = ""
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
         Item={
-            'pk': f'SHOW#{request_id}',
+            'pk': f'SHOW#{count_response['Attributes']['number']}',
             'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
