@@ -2,344 +2,240 @@ service: sls-py-demo
 frameworkVersion: "3"
 
 params:
-  dev:
-    ENABLE_TIME_TRIGGER: false
-  prod:
-    ENABLE_TIME_TRIGGER: false
-  default:
-    # This is mostly an example of how to use params for envs
-    DEMO_BUCKET: 	generic.bucket.for.testing
-    ENABLE_TIME_TRIGGER: false
+    dev:
+        ENABLE_TIME_TRIGGER: false
+    prod:
+        ENABLE_TIME_TRIGGER: false
+    default:
+        # This is mostly an example of how to use params for envs
+        DEMO_BUCKET: generic.bucket.for.testing
+        ENABLE_TIME_TRIGGER: false
 
 #Config and Default Lambda Settings
 provider:
-  name: aws
-  runtime: python3.11
-  stage: ${opt:stage, 'dev'} # The github actions pipeline will pass the branch name as the stage
-  region: ${opt:region, 'us-east-2'}
-  deploymentBucket:
-    name: ${aws:accountId}-serverless
-  timeout: 29
-  memorySize: 256
-  stackTags:
-    application: ${self:service}
-    environment: ${self:provider.stage}
-    ManagedBy: Serverless Framework
-  http:
-    authorizers:
-      customAuthorizer:
-        type: request
-        functionName: customAuthorizer
-        # A lot of older examples use payload v1.0, but it is easy to convert.
-        # https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
-        # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-  # apiGateway:
-  #   resourcePolicy:
-  #     - Effect: Allow
-  #       Principal: "*"
-  #       Action: execute-api:Invoke
-  #       Resource:
-  #         - execute-api:/*/*/*
-  #       Condition:
-  #         IpAddress:
-  #           aws:SourceIp:
-  #             - ""
+    name: aws
+    runtime: python3.11
+    stage: ${opt:stage, 'dev'} # The github actions pipeline will pass the branch name as the stage
+    region: ${opt:region, 'us-east-2'}
+    deploymentBucket:
+        name: ${aws:accountId}-serverless
+    timeout: 29
+    memorySize: 256
+    stackTags:
+        application: ${self:service}
+        environment: ${self:provider.stage}
+        ManagedBy: Serverless Framework
+    http:
+        authorizers:
+            customAuthorizer:
+                type: request
+                functionName: customAuthorizer
+                # A lot of older examples use payload v1.0, but it is easy to convert.
+                # https://www.serverless.com/framework/docs/providers/aws/events/http-api#event--payload-format
+                # https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    # apiGateway:
+    #   resourcePolicy:
+    #     - Effect: Allow
+    #       Principal: "*"
+    #       Action: execute-api:Invoke
+    #       Resource:
+    #         - execute-api:/*/*/*
+    #       Condition:
+    #         IpAddress:
+    #           aws:SourceIp:
+    #             - ""
 
-  iam: # These are the permission that your lambdas will have.
-    role:
-      name: sls-python-demo-${self:provider.stage}-lambda
-      statements:
-        - Effect: Allow
-          Action:
-            - "s3:ListBucket"
-            - "s3:PutObject"
-            - "s3:GetObject"
-          Resource:
-            - "arn:aws:s3:::${param:DEMO_BUCKET}"
-            - "arn:aws:s3:::${param:DEMO_BUCKET}/*"
-        - Effect: Allow
-          Action:
-            - sqs:sendmessage
-          Resource: !GetAtt ProcessingQueue.Arn
-        - Effect: Allow
-          Action:
-            - "dynamodb:Get*"
-            - "dynamodb:Put*"
-            - "dynamodb:Update*"
-            - "dynamodb:Query"
-            - "dynamodb:Scan"
-          Resource:
-            - !GetAtt DemoDynamoTable.Arn
-            - !Join ["/", [!GetAtt DemoDynamoTable.Arn, index/*]] # Need query access to index
-        - Effect: Allow
-          Action:
-            - "sns:Publish"
-          Resource: !Ref DemoTopic
-        - Effect: Allow
-          Action:
-            - "secretsmanager:*"
-          Resource: "arn:aws:secretsmanager:${aws:region}:${aws:accountId}:secret:*"
+    iam: # These are the permission that your lambdas will have.
+        role:
+            name: sls-python-demo-${self:provider.stage}-lambda
+            statements:
+                - Effect: Allow
+                  Action:
+                      - "dynamodb:Get*"
+                      - "dynamodb:Put*"
+                      - "dynamodb:Update*"
+                      - "dynamodb:Query"
+                      - "dynamodb:Scan"
+                  Resource:
+                      - !GetAtt DemoDynamoTable.Arn
+                      # - !Join ["/", [!GetAtt DemoDynamoTable.Arn, index/*]] # Need query access to index
 
 custom:
-  deploymentBucket:
-    blockPublicAccess: true
-    tags:
-      - Key: Name
-        Value: ${self:provider.deploymentBucket.name}
-      - Key: environment
-        Value: ${self:provider.stage}
-  pythonRequirements:
-    dockerizePip: non-linux
+    deploymentBucket:
+        blockPublicAccess: true
+        tags:
+            - Key: Name
+              Value: ${self:provider.deploymentBucket.name}
+            - Key: environment
+              Value: ${self:provider.stage}
+    pythonRequirements:
+        dockerizePip: non-linux
 
 functions:
-  customAuthorizer:
-    handler: src/custom_authorizer.handler
-    description: This function serves as an example of custom authorizers
-  # API Gateway
-  Api:
-    handler: src/api_handler.hello
-    description: This function demonstrates various api events
-    events:
-      - http:
-          path: /
-          method: get
-      - http:
-          path: /hello_auth/{name}
-          method: get
-          authorizer:
-            name: customAuthorizer
-      - http:
-          path: /hello
-          method: get
-      # - schedule:
-      #     rate: cron(30 12 * * ? *)
-      #     enabled: ${param:ENABLE_TIME_TRIGGER}
+    customAuthorizer:
+        handler: src/custom_authorizer.handler
+        description: This function serves as an example of custom authorizers
+    getShows:
+        handler: src/shows.get_all
+        description: Returns all shows
+        events:
+            - http:
+                  path: /shows
+                  method: GET
+    addShow:
+        handler: src/shows.add
+        description: Adds a show
+        events:
+            - http:
+                  path: /shows/add
+                  method: POST
+#   # API Gateway
+#   Api:
+#     handler: src/api_handler.hello
+#     description: This function demonstrates various api events
+#     events:
+#       - http:
+#           path: /
+#           method: get
+#       - http:
+#           path: /hello_auth/{name}
+#           method: get
+#           authorizer:
+#             name: customAuthorizer
+#       - http:
+#           path: /hello
+#           method: get
+#       # - schedule:
+#       #     rate: cron(30 12 * * ? *)
+#       #     enabled: ${param:ENABLE_TIME_TRIGGER}
 
-  # SQS
-  writeToQueue:
-    handler: src/sqs_handler.write_queue
-    description: This function is an example of writing to sqs to trigger the queue processor lambda
-    environment:
-      SQS_QUEUE_URL: { Ref: ProcessingQueue }
-    events:
-      - schedule:
-          rate: cron(30 12 * * ? *) # Important! Not really cron https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html
-          enabled: ${param:ENABLE_TIME_TRIGGER}
-      - schedule:
-          rate: rate(2 hours)
-          enabled: ${param:ENABLE_TIME_TRIGGER}
+#   # Dynamo / Kinesis
+#   writeToDynamo:
+#     handler: src/dynamodb_handler.write_item
+#     description: This function is an example of writing to dynamo to trigger the dynamo processor lambda
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
 
-  sqsProcessor:
-    handler: src/sqs_handler.process_queue
-    description: This function is an example of triggering on messages being written to a queue
-    events:
-      - sqs:
-          arn:
-            Fn::GetAtt:
-              - ProcessingQueue
-              - Arn
-  # S3
-  writeToS3:
-    handler: src/s3_handler.write_file
-    description: This function is an example of writing to s3 to trigger the s3 processor lambda
-    environment:
-      BUCKET: ${param:DEMO_BUCKET}
-      KEY_PREFIX: ${self:provider.stage}/demo/uploads/
+#   dynamoProcessor:
+#     handler: src/dynamodb_handler.process_stream
+#     description: This function is an example of triggering off of items being added to dynamodb
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - stream:
+#           type: dynamodb
+#           arn: !GetAtt DemoDynamoTable.StreamArn
+#           filterPatterns:
+#             - eventName: [INSERT]
 
-  s3Processor:
-    handler: src/s3_handler.process_event
-    description: This function is an example on how to trigger off of files being written to s3
-    events:
-      - s3:
-          bucket: ${param:DEMO_BUCKET}
-          existing: true
-          forceDeploy: true
-          rules:
-            - prefix: ${self:provider.stage}/demo/uploads/
+#   dynamoTTLProcessor:
+#     handler: src/dynamodb_handler.process_ttl_stream
+#     description: This function is an example of triggering off of items being removed from dynamodb
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - stream:
+#           type: dynamodb
+#           arn: !GetAtt DemoDynamoTable.StreamArn
+#           filterPatterns:
+#             - eventName: [REMOVE]
 
-  # Dynamo / Kinesis
-  writeToDynamo:
-    handler: src/dynamodb_handler.write_item
-    description: This function is an example of writing to dynamo to trigger the dynamo processor lambda
-    environment:
-      TABLE: !Ref DemoDynamoTable
+# ######################################################
+# ##                 Demo Functions                   ##
+# ######################################################
 
-  dynamoProcessor:
-    handler: src/dynamodb_handler.process_stream
-    description: This function is an example of triggering off of items being added to dynamodb
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt DemoDynamoTable.StreamArn
-          filterPatterns:
-            - eventName: [INSERT]
+#   nameApi:
+#     handler: src/api_handler.hello_name
+#     description: This function logs the name to dynamodb
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - http:
+#           path: /hello/{name}
+#           method: get # would be a post IRL
 
-  dynamoTTLProcessor:
-    handler: src/dynamodb_handler.process_ttl_stream
-    description: This function is an example of triggering off of items being removed from dynamodb
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - stream:
-          type: dynamodb
-          arn: !GetAtt DemoDynamoTable.StreamArn
-          filterPatterns:
-            - eventName: [REMOVE]
+#   getWinner:
+#     handler: src/api_handler.get_winner
+#     description: This function returns the winner
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - http:
+#           path: /winner
+#           method: get
+#   getEntrants:
+#     handler: src/api_handler.show_entrants
+#     description: This function returns the entrants
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - http:
+#           path: /entrants/raw
+#           method: get
+#   getUniqueEntrants:
+#     handler: src/api_handler.show_unique_entrants
+#     description: This function returns the entrants
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - http:
+#           path: /entrants
+#           method: get
+#   addWinner:
+#     handler: src/api_handler.add_winner
+#     description: This function adds the winning number to dynamo table
+#     environment:
+#       TABLE: !Ref DemoDynamoTable
+#     events:
+#       - http:
+#           path: /winner/add/{number}
+#           method: post
 
-  # SNS
-  writeToSNS:
-    handler: src/sns_handler.write_topic
-    description: This function sends a message to an SNS topic to trigger the processor lambda
-    environment:
-      TOPIC: !Ref DemoTopic
-
-  snsProcessor:
-    handler: src/sns_handler.process_topic
-    description: This function is an example of triggering off of message being added to an SNS Topic
-    events:
-      - sns:
-          arn: !Ref DemoTopic
-          topicName: DemoTopic
-
-  # Event Bridge
-  eventBridge:
-    handler: src/sqs_handler.write_queue
-    description: This function is an example of writing to sqs based on event bridge triggers
-    environment:
-      SQS_QUEUE_URL: { Ref: ProcessingQueue }
-    events:
-      - schedule:
-          rate: cron(30 12 * * ? *) # At 12:30 every day
-          # Important! Not really cron https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html
-          enabled: ${param:ENABLE_TIME_TRIGGER}
-      - schedule:
-          rate: rate(2 hours)
-          enabled: ${param:ENABLE_TIME_TRIGGER}
-      # Event Bridge Pattern S3
-      - eventBridge:
-          pattern:
-            source:
-              - aws.s3
-            detail-type:
-              - Object Created
-            detail:
-              bucket:
-                name:
-                  - ${param:DEMO_BUCKET}
-              object:
-                key:
-                  - prefix: ${self:provider.stage}/demo/uploads/
-
-######################################################
-##                 Demo Functions                   ##
-######################################################
-
-  nameApi:
-    handler: src/api_handler.hello_name
-    description: This function logs the name to dynamodb
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - http:
-          path: /hello/{name}
-          method: get # would be a post IRL
-
-  getWinner:
-    handler: src/api_handler.get_winner
-    description: This function returns the winner
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - http:
-          path: /winner
-          method: get
-  getEntrants:
-    handler: src/api_handler.show_entrants
-    description: This function returns the entrants
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - http:
-          path: /entrants/raw
-          method: get
-  getUniqueEntrants:
-    handler: src/api_handler.show_unique_entrants
-    description: This function returns the entrants
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - http:
-          path: /entrants
-          method: get
-  addWinner:
-    handler: src/api_handler.add_winner
-    description: This function adds the winning number to dynamo table
-    environment:
-      TABLE: !Ref DemoDynamoTable
-    events:
-      - http:
-          path: /winner/add/{number}
-          method: post
-
-
-  # TODO Lambda behind WAF
-  # TODO LAMBDA behind Cognito auth
+# TODO Lambda behind WAF
+# TODO LAMBDA behind Cognito auth
 
 plugins:
-  - serverless-better-credentials
-  - serverless-deployment-bucket
-  - serverless-plugin-resource-tagging
-  - serverless-python-requirements
+    - serverless-better-credentials
+    - serverless-deployment-bucket
+    - serverless-plugin-resource-tagging
+    - serverless-python-requirements
 
 resources:
-  Resources:
-    # SQS
-    ProcessingQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: sls-queue-${self:provider.stage}
-    # Dynamodb
-    DemoDynamoTable:
-      # WARNING! This table will be deleted with the rest of the stack taking your data with it.
-      # It is recommended that you don't store critical data here. If you want your ddb here you
-      # can use serverless-compose and split your infra into a different stack.
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: demo-${self:provider.stage}
-        AttributeDefinitions:
-          - AttributeName: pk
-            AttributeType: S
-          - AttributeName: sk
-            AttributeType: S
-          - AttributeName: number
-            AttributeType: N
-        BillingMode: PAY_PER_REQUEST
-        KeySchema: # Required
-          - AttributeName: pk
-            KeyType: HASH
-          - AttributeName: sk
-            KeyType: RANGE
-        PointInTimeRecoverySpecification:
-          PointInTimeRecoveryEnabled: true
-        StreamSpecification:
-          StreamViewType: NEW_AND_OLD_IMAGES
-        TimeToLiveSpecification:
-          AttributeName: TTL
-          Enabled: true
-        GlobalSecondaryIndexes:
-          - IndexName: number-name
-            KeySchema:
-              - AttributeName: number
-                KeyType: HASH
-              - AttributeName: sk
-                KeyType: RANGE
-            Projection:
-              ProjectionType: KEYS_ONLY
-
-    # SNS
-    DemoTopic:
-      Type: AWS::SNS::Topic
-      Properties:
-        TopicName: DemoTopic-${self:provider.stage}
+    Resources:
+        # Dynamodb
+        DemoDynamoTable:
+            # WARNING! This table will be deleted with the rest of the stack taking your data with it.
+            # It is recommended that you don't store critical data here. If you want your ddb here you
+            # can use serverless-compose and split your infra into a different stack.
+            Type: AWS::DynamoDB::Table
+            Properties:
+                TableName: oco-${self:provider.stage}
+                AttributeDefinitions:
+                    - AttributeName: pk
+                      AttributeType: S
+                    - AttributeName: sk
+                      AttributeType: S
+                BillingMode: PAY_PER_REQUEST
+                KeySchema: # Required
+                    - AttributeName: pk
+                      KeyType: HASH
+                    - AttributeName: sk
+                      KeyType: RANGE
+                PointInTimeRecoverySpecification:
+                    PointInTimeRecoveryEnabled: true
+                StreamSpecification:
+                    StreamViewType: NEW_AND_OLD_IMAGES
+                TimeToLiveSpecification:
+                    AttributeName: TTL
+                    Enabled: true
+                GlobalSecondaryIndexes:
+                    - IndexName: GSI1
+                      KeySchema:
+                          - AttributeName: GSI1PK
+                            KeyType: HASH
+                          - AttributeName: GSI1SK
+                            KeyType: RANGE
+                      Projection:
+                          ProjectionType: INCLUDE
+                          NonKeyAttributes:
+                              - GSI1DATA
