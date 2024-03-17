@@ -247,4 +247,4 @@ resources:
                       Projection:
                           ProjectionType: INCLUDE
                           NonKeyAttributes:
-                            - GSI1DATA
+                              - GSI1DATA

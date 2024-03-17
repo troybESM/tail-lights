@@ -47,7 +47,7 @@ def add_show(show, request_id):
             'title': '',
             'GSI1PK': 'SHOW',
             'GSI1SK': f'SHOW#{request_id}',
-            'GSI1Data': {
+            'GSI1DATA': {
                 'description': show['description'][0:100],
                 'title': '',
                 'date': show['date'],
