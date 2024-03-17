@@ -1,6 +1,6 @@
 import json
 from aws_lambda_powertools import Logger
-from src.dynamo_utils import add_show
+from src.dynamo_utils import add_show, query_gsi_pk_only
 from collections import Counter
 
 logger = Logger()
@@ -8,9 +8,9 @@ logger = Logger()
 
 @logger.inject_lambda_context
 def get_all(event, context):
-    name = 'Stranger'
+    shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
     body = {
-        "message": f"Hi {name}! Python Lambdas are fun and easy."
+        "message": shows
     }
 
     response = {"statusCode": 200, "body": json.dumps(body)}

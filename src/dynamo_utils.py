@@ -44,11 +44,14 @@ def add_show(show, request_id):
             'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
+            'title': '',
             'GSI1PK': 'SHOW',
             'GSI1SK': f'SHOW#{request_id}',
             'GSI1Data': {
                 'description': show['description'][0:100],
+                'title': '',
                 'date': show['date'],
+                'time': '',
                 'location': show['location'],
             },
             **show
@@ -88,6 +91,22 @@ def add_show(show, request_id):
     logger.info(f"Added Item: {response}")
     return response
 
+
+def query_gsi_pk_only(pk, gsi):
+    response = table.query(
+        IndexName=gsi,
+        KeyConditionExpression=Key('pk').eq(pk)
+    )
+    return response['Items']
+
+
+def scan_gsi(sk):
+    response = table.scan(
+        IndexName="GSI1",
+        Limit=200,
+        FilterExpression=Key('pk').eq
+    )
+    return response['Items']
 
 def decrease_count():
     count_response = table.update_item(
@@ -133,18 +152,3 @@ def query_table(pk, sk):
     return response['Items']
 
 
-def scan_gsi(sk):
-    response = table.scan(
-        IndexName="number-name",
-        Limit=200,
-        FilterExpression=Key('sk').begins_with(sk)
-    )
-    return response['Items']
-
-
-def query_gsi(query):
-    response = table.query(
-        IndexName="number-name",
-        KeyConditionExpression=Key('number').eq(query)
-    )
-    return response['Items']
