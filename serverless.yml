@@ -57,7 +57,7 @@ provider:
                       - "dynamodb:Scan"
                   Resource:
                       - !GetAtt OCODynamoTable.Arn
-                      # - !Join ["/", [!GetAtt DemoDynamoTable.Arn, index/*]] # Need query access to index
+                      - !Join ["/", [!GetAtt OCODynamoTable.Arn, index/*]] # Need query access to index
 
 custom:
     deploymentBucket:
