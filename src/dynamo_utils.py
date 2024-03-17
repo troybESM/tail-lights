@@ -36,7 +36,6 @@ def add_show(show, request_id):
     )
     
     # Store new Item
-    description = ""
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
         Item={
@@ -45,16 +44,18 @@ def add_show(show, request_id):
             'approved': False,
             'active': True,
             'requestId': request_id,
+            'eventTime': {
+                'reg': show['regTime'],
+                'award': show['awardTime'],
+            }
             'title': show['title'],
             'date': show['date'],
-            'time': show['time'],
             'GSI1PK': 'SHOW',
             'GSI1SK': f'SHOW#{show["date"]}',
             'GSI1DATA': {
-                'description': show['description'][0:100],
+                'description': show['description'][0:200],
                 'title': show['title'],
                 'date': show['date'],
-                'time': show['time'],
                 'location': show['location'],
             },
             **show
