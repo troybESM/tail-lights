@@ -33,12 +33,16 @@ def get_all(event, context):
 
 @logger.inject_lambda_context
 def add(event, context):
+    # Parse Body
     logger.info(f"add function event is {event}")
-    logger.info(f"add function context is {context}")
-    body = event.get('body')
-    show = body.get('show')
+    body = json.loads(event.get('body'))
     logger.info(f"body is: {body}")
+    
+    # Get Show Object
+    show = body.get('show')
     logger.info(f"show is: {show}")
+
+    # Add Show
     response = add_show(show, request_id=context.aws_request_id)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info(f"response is {response}")
