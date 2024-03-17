@@ -39,11 +39,9 @@ def add(event, context):
     logger.info(f"body is: {body}")
     
     # Get Show Object
-    show = body.get('show')
-    logger.info(f"show is: {show}")
 
     # Add Show
-    response = add_show(show, request_id=context.aws_request_id)
+    response = add_show(body, request_id=context.aws_request_id)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info(f"response is {response}")
         resp_body = {
