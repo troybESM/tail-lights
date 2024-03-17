@@ -77,6 +77,8 @@ functions:
     getShows:
         handler: src/shows.get_all
         description: Returns all shows
+        environment:
+            TABLE: !Ref OCODynamoTable
         events:
             - http:
                   path: /shows
