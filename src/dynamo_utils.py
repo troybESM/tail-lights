@@ -47,7 +47,7 @@ def add_show(show, request_id):
             'eventTime': {
                 'reg': show['regTime'],
                 'award': show['awardTime'],
-            }
+            },
             'title': show['title'],
             'date': show['date'],
             'GSI1PK': 'SHOW',
