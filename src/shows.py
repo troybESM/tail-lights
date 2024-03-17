@@ -40,7 +40,7 @@ def add(event, context):
     logger.info(f"body is: {body}")
     logger.info(f"show is: {show}")
     response = add_show(show, request_id=context.aws_request_id)
-    if response['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info(f"response is {response}")
         body = {
             "message": "Added show!"
