@@ -95,7 +95,7 @@ def add_show(show, request_id):
 def query_gsi_pk_only(pk, gsi):
     response = table.query(
         IndexName=gsi,
-        KeyConditionExpression=Key('pk').eq(pk)
+        KeyConditionExpression=Key('GSI1PK').eq(pk)
     )
     return response['Items']
 

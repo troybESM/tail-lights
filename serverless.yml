@@ -222,6 +222,8 @@ resources:
                       AttributeType: S
                     - AttributeName: GSI1SK
                       AttributeType: S
+                    - AttributeName: GSI1DATA
+                      AttributeType: S
                 BillingMode: PAY_PER_REQUEST
                 KeySchema: # Required
                     - AttributeName: pk
