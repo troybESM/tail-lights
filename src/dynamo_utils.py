@@ -52,7 +52,7 @@ def add_show(show, request_id):
                 'description': show['description'][0:200],
                 'title': show['title'],
                 'date': show['date'],
-                'location': f'{ show['city']}, {show['state']}',
+                'location': f"{ show['city']}, {show['state']}",
             },
             **show
             # 'date': '',
