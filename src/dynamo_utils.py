@@ -36,7 +36,6 @@ def add_show(show, request_id):
     )
     
     # Store new Item
-    description = ""
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
         Item={
@@ -44,12 +43,16 @@ def add_show(show, request_id):
             'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
+            'requestId': request_id,
+            'title': show['title'],
+            'date': show['date'],
             'GSI1PK': 'SHOW',
-            'GSI1SK': f'SHOW#{request_id}',
-            'GSI1Data': {
-                'description': show['description'][0:100],
+            'GSI1SK': f'SHOW#{show["date"]}',
+            'GSI1DATA': {
+                'description': show['description'][0:200],
+                'title': show['title'],
                 'date': show['date'],
-                'location': show['location'],
+                'location': f"{ show['city']}, {show['state']}",
             },
             **show
             # 'date': '',
@@ -88,6 +91,22 @@ def add_show(show, request_id):
     logger.info(f"Added Item: {response}")
     return response
 
+
+def query_gsi_pk_only(pk, gsi):
+    response = table.query(
+        IndexName=gsi,
+        KeyConditionExpression=Key('GSI1PK').eq(pk)
+    )
+    return response['Items']
+
+
+def scan_gsi(sk):
+    response = table.scan(
+        IndexName="GSI1",
+        Limit=200,
+        FilterExpression=Key('pk').eq
+    )
+    return response['Items']
 
 def decrease_count():
     count_response = table.update_item(
@@ -133,18 +152,3 @@ def query_table(pk, sk):
     return response['Items']
 
 
-def scan_gsi(sk):
-    response = table.scan(
-        IndexName="number-name",
-        Limit=200,
-        FilterExpression=Key('sk').begins_with(sk)
-    )
-    return response['Items']
-
-
-def query_gsi(query):
-    response = table.query(
-        IndexName="number-name",
-        KeyConditionExpression=Key('number').eq(query)
-    )
-    return response['Items']

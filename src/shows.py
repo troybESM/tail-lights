@@ -1,6 +1,6 @@
 import json
 from aws_lambda_powertools import Logger
-from src.dynamo_utils import add_show
+from src.dynamo_utils import add_show, query_gsi_pk_only
 from collections import Counter
 
 logger = Logger()
@@ -8,12 +8,9 @@ logger = Logger()
 
 @logger.inject_lambda_context
 def get_all(event, context):
-    name = 'Stranger'
-    body = {
-        "message": f"Hi {name}! Python Lambdas are fun and easy."
-    }
+    shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
 
-    response = {"statusCode": 200, "body": json.dumps(body)}
+    response = {"statusCode": 200, "body": json.dumps(shows)}
 
     return response
 
@@ -39,11 +36,9 @@ def add(event, context):
     logger.info(f"body is: {body}")
     
     # Get Show Object
-    show = body.get('show')
-    logger.info(f"show is: {show}")
 
     # Add Show
-    response = add_show(show, request_id=context.aws_request_id)
+    response = add_show(body, request_id=context.aws_request_id)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info(f"response is {response}")
         resp_body = {
