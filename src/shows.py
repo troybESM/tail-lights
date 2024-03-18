@@ -51,7 +51,7 @@ def add(event, context):
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         logger.info(f"response is {response}")
         resp_body = {
-            "message": "Added show!"
+            "message": f"Added show {response['added_item']}"
         }
         response = {"statusCode": 200, "body": json.dumps(resp_body)}
     else:
