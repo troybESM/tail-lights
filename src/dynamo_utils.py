@@ -38,7 +38,6 @@ def add_show(show, request_id):
     # Store new Item
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
-        ReturnValues='ALL_NEW',
         Item={
             'pk': f'SHOW-{count_response["Attributes"]["number"]}',
             'sk': f'SHOW#{show["date"]}',
@@ -89,6 +88,7 @@ def add_show(show, request_id):
             # 'TTL': TTL
         }
     )
+    response['added_item']= f"SHOW-{count_response["Attributes"]["number"]}"
     logger.info(f"Added Item: {response}")
     return response
 
