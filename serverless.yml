@@ -83,8 +83,8 @@ functions:
             - http:
                   path: /shows
                   method: GET
-    getShows:
-        handler: src/shows.get_all
+    getShow:
+        handler: src/shows.get
         description: Return show by id
         environment:
             TABLE: !Ref OCODynamoTable
