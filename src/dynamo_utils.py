@@ -39,7 +39,7 @@ def add_show(show, request_id):
     TTL = get_ttl(date="<Show Date>")
     response = table.put_item(
         Item={
-            'pk': f'SHOW#{count_response["Attributes"]["number"]}',
+            'pk': f'SHOW-{count_response["Attributes"]["number"]}',
             'sk': f'SHOW#{show["date"]}',
             'approved': False,
             'active': True,
@@ -145,10 +145,15 @@ def add_winning_number(number):
     return response
 
 
-def query_table(pk, sk):
-    response = table.query(
-        KeyConditionExpression=Key('pk').eq(pk) & Key('sk').eq(sk)
-    )
+def query_table(pk, sk=None):
+    if sk:
+        response = table.query(
+            KeyConditionExpression=Key('pk').eq(pk) & Key('sk').eq(sk)
+        )
+    else:
+        response = table.query(
+            KeyConditionExpression=Key('pk').eq(pk)
+        )
     return response['Items']
 
 

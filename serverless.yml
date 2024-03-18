@@ -83,6 +83,15 @@ functions:
             - http:
                   path: /shows
                   method: GET
+    getShow:
+        handler: src/shows.get
+        description: Return show by id
+        environment:
+            TABLE: !Ref OCODynamoTable
+        events:
+            - http:
+                  path: /shows/{show_id}
+                  method: GET
     addShow:
         handler: src/shows.add
         description: Adds a show
@@ -92,6 +101,7 @@ functions:
             - http:
                   path: /shows/add
                   method: POST
+
 #   # API Gateway
 #   Api:
 #     handler: src/api_handler.hello
