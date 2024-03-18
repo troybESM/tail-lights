@@ -9,11 +9,8 @@ logger = Logger()
 @logger.inject_lambda_context
 def get_all(event, context):
     shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
-    body = {
-        "message": shows
-    }
 
-    response = {"statusCode": 200, "body": json.dumps(body)}
+    response = {"statusCode": 200, "body": json.dumps(shows)}
 
     return response
 
