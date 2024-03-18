@@ -1,6 +1,6 @@
 import json
 from aws_lambda_powertools import Logger
-from src.dynamo_utils import add_show, query_gsi_pk_only
+from src.dynamo_utils import add_show, query_gsi_pk_only, query_table
 from collections import Counter
 
 logger = Logger()
@@ -14,6 +14,14 @@ def get_all(event, context):
 
     return response
 
+@logger.inject_lambda_context
+def get(event, context):
+    show_id = event.get('pathParameters', {}).get('show_id')
+    shows = query_table(pk=show_id)
+
+    response = {"statusCode": 200, "body": json.dumps(shows)}
+
+    return response
 
 # @logger.inject_lambda_context
 # def get(event, context):
