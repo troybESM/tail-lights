@@ -145,7 +145,7 @@ def add_winning_number(number):
     return response
 
 
-def query_table(pk, sk):
+def query_table(pk, sk=None):
     if sk:
         response = table.query(
             KeyConditionExpression=Key('pk').eq(pk) & Key('sk').eq(sk)
