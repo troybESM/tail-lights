@@ -17,9 +17,10 @@ def get_all(event, context):
 @logger.inject_lambda_context
 def get(event, context):
     show_id = event.get('pathParameters', {}).get('show_id')
-    shows = query_table(pk=show_id)
-
-    response = {"statusCode": 200, "body": json.dumps(shows)}
+    logger.info(f"show_id = {show_id}")
+    show = query_table(pk=show_id)
+    logger.info(f"show = {show}")
+    response = {"statusCode": 200, "body": json.dumps(show)}
 
     return response
 
