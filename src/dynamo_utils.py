@@ -44,10 +44,6 @@ def add_show(show, request_id):
             'approved': False,
             'active': True,
             'requestId': request_id,
-            'eventTime': {
-                'reg': show['regTime'],
-                'award': show['awardTime'],
-            },
             'title': show['title'],
             'date': show['date'],
             'GSI1PK': 'SHOW',
@@ -56,7 +52,7 @@ def add_show(show, request_id):
                 'description': show['description'][0:200],
                 'title': show['title'],
                 'date': show['date'],
-                'location': show['location'],
+                'location': f'{ show['city']}, {show['state']}',
             },
             **show
             # 'date': '',
