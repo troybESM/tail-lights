@@ -1,5 +1,7 @@
 import json
 from aws_lambda_powertools import Logger
+from src.dynamo_utils import query_gsi_pk_only
+
 logger = Logger()
 
 
@@ -12,7 +14,18 @@ def addEntry(event, context):
 
 @logger.inject_lambda_context
 def get(event, context):
-    body = '''
+    shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
+    show_element_list = []
+    for show in shows:
+        list.append(f"""
+            <item>
+                <title>{show['GSI1DATA']['title']}</title>
+                <description>{show['GSI1DATA']['description']}</description>
+                <link>https://ua1l68fqx9.execute-api.us-east-2.amazonaws.com/dev-main/shows/{show['pk']}</link>
+            </item>
+        """)
+
+    body = f"""
         <rss version="2.0">
         <channel>
         <title>Sample Feed</title>
@@ -30,9 +43,10 @@ def get(event, context):
         <guid>http://example.org/entry/3</guid>
         <!-- other elements omitted from this example -->
         </item>
+        {''.join(show_element_list)}
         </channel>
         </rss>
-'''
+"""
     response = {
         "statusCode": 200,
         "headers": {
