@@ -104,8 +104,6 @@ functions:
     rssInsert:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
-        environment:
-            TABLE: !Ref OCO
         events:
         - stream:
             type: dynamodb
@@ -116,8 +114,6 @@ functions:
     rssModify:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
-        environment:
-            TABLE: !Ref OCO
         events:
         - stream:
             type: dynamodb
