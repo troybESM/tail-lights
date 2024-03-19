@@ -124,7 +124,15 @@ functions:
                     NewImage:
                       approved:
                         BOOL: [True]
-
+    rssGet:
+        handler: src/rss.get
+        description: Return rss feed
+        environment:
+            TABLE: !Ref OCODynamoTable
+        events:
+            - http:
+                  path: /shows/rss
+                  method: GET
 #   # API Gateway
 #   Api:
 #     handler: src/api_handler.hello
