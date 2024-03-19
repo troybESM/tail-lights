@@ -101,11 +101,11 @@ functions:
             - http:
                   path: /shows/add
                   method: POST
-    dynamoProcessor:
+    rssInsert:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
         environment:
-        TABLE: !Ref OCO
+            TABLE: !Ref OCO
         events:
         - stream:
             type: dynamodb
@@ -113,11 +113,11 @@ functions:
             filterPatterns:
                 - eventName: [INSERT]
 
-    dynamoProcessorMod:
+    rssModify:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
         environment:
-        TABLE: !Ref OCO
+            TABLE: !Ref OCO
         events:
         - stream:
             type: dynamodb
