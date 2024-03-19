@@ -13,7 +13,6 @@ def addEntry(event, context):
 @logger.inject_lambda_context
 def get(event, context):
     body = '''
-        <?xml version="1.0" encoding="utf-8"?>
         <rss version="2.0">
         <channel>
         <title>Sample Feed</title>
