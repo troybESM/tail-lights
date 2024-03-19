@@ -17,7 +17,7 @@ def get(event, context):
     shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
     show_element_list = []
     for show in shows:
-        list.append(f"""
+        show_element_list.append(f"""
             <item>
                 <title>{show['GSI1DATA']['title']}</title>
                 <description>{show['GSI1DATA']['description']}</description>
