@@ -108,8 +108,8 @@ functions:
         - stream:
             type: dynamodb
             arn: !GetAtt OCODynamoTable.StreamArn
-            filterPatterns:
-                - eventName: [INSERT]
+            # filterPatterns:
+            #     - eventName: [INSERT]
 
     rssModify:
         handler: src/rss.addEntry
@@ -120,10 +120,10 @@ functions:
             arn: !GetAtt OCODynamoTable.StreamArn
             filterPatterns:
                 - eventName: [MODIFY]
-                  dynamodb:
-                    NewImage:
-                      approved:
-                        B: [True]
+                #   dynamodb:
+                #     NewImage:
+                #       approved:
+                #         B: [True]
 
 #   # API Gateway
 #   Api:
