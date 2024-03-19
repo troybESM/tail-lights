@@ -101,6 +101,33 @@ functions:
             - http:
                   path: /shows/add
                   method: POST
+    dynamoProcessor:
+        handler: src/rss.addEntry
+        description: This function is an example of triggering off of items being added to dynamodb
+        environment:
+        TABLE: !Ref OCO
+        events:
+        - stream:
+            type: dynamodb
+            arn: !GetAtt OCODynamoTable.StreamArn
+            filterPatterns:
+                - eventName: [INSERT]
+
+    dynamoProcessor:
+        handler: src/rss.addEntry
+        description: This function is an example of triggering off of items being added to dynamodb
+        environment:
+        TABLE: !Ref OCO
+        events:
+        - stream:
+            type: dynamodb
+            arn: !GetAtt OCODynamoTable.StreamArn
+            filterPatterns:
+                - eventName: [MODIFY]
+                    dynamodb:
+                        NewImage:
+                            approved:
+                                B: [True]
 
 #   # API Gateway
 #   Api:
