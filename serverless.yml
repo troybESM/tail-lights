@@ -113,7 +113,7 @@ functions:
             filterPatterns:
                 - eventName: [INSERT]
 
-    dynamoProcessor:
+    dynamoProcessorMod:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
         environment:
