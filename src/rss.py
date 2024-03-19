@@ -36,7 +36,7 @@ def get(event, context):
 '''
     response = {
         "statusCode": 200,
-        headers: {
+        "headers": {
             'Content-Type': 'application/xml'
         },
          "body": body
