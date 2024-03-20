@@ -101,7 +101,38 @@ functions:
             - http:
                   path: /shows/add
                   method: POST
+    rssInsert:
+        handler: src/rss.addEntry
+        description: This function is an example of triggering off of items being added to dynamodb
+        events:
+        - stream:
+            type: dynamodb
+            arn: !GetAtt OCODynamoTable.StreamArn
+            # filterPatterns:
+            #     - eventName: [INSERT]
 
+    rssModify:
+        handler: src/rss.addEntry
+        description: This function is an example of triggering off of items being added to dynamodb
+        events:
+        - stream:
+            type: dynamodb
+            arn: !GetAtt OCODynamoTable.StreamArn
+            filterPatterns:
+                - eventName: [MODIFY]
+                  dynamodb:
+                    NewImage:
+                      approved:
+                        BOOL: [True]
+    rssGet:
+        handler: src/rss.get
+        description: Return rss feed
+        environment:
+            TABLE: !Ref OCODynamoTable
+        events:
+            - http:
+                  path: /shows/rss
+                  method: GET
 #   # API Gateway
 #   Api:
 #     handler: src/api_handler.hello
