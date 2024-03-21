@@ -9,8 +9,11 @@ logger = Logger()
 @logger.inject_lambda_context
 def get_all(event, context):
     shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
-
-    response = {"statusCode": 200, "body": json.dumps(shows)}
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': "true",
+        },
+    response = {"statusCode": 200,"headers": headers, "body": json.dumps(shows)}
 
     return response
 
@@ -20,7 +23,11 @@ def get(event, context):
     logger.info(f"show_id = {show_id}")
     show = query_table(pk=show_id)
     logger.info(f"show = {show}")
-    response = {"statusCode": 200, "body": json.dumps(show)}
+    headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': "true",
+    },
+    response = {"statusCode": 200,"headers": headers, "body": json.dumps(show)}
 
     return response
 
@@ -53,7 +60,11 @@ def add(event, context):
         resp_body = {
             "message": f"Added show {response['added_item']}"
         }
-        response = {"statusCode": 200, "body": json.dumps(resp_body)}
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': "true",
+        },
+        response = {"statusCode": 200,"headers": headers, "body": json.dumps(resp_body)}
     else:
         response = {"statusCode": 451, "body": "Request Accepted, Failed adding show"}
 

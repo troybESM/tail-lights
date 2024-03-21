@@ -38,8 +38,10 @@ def get(event, context):
     response = {
         "statusCode": 200,
         "headers": {
-            'Content-Type': 'application/xml'
+            'Content-Type': 'application/xml',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': "true",
         },
-         "body": body
-        }
+        "body": body
+    }
     return response
