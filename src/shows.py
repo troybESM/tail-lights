@@ -11,8 +11,9 @@ def get_all(event, context):
     shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
     headers = {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': "true",
+        'Access-Control-Allow-Credentials': True,
         },
+    logger.info(f"get_all shows {shows}")
     response = {"statusCode": 200,"headers": headers, "body": json.dumps(shows)}
 
     return response
@@ -25,7 +26,7 @@ def get(event, context):
     logger.info(f"show = {show}")
     headers = {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Credentials': "true",
+      'Access-Control-Allow-Credentials': True,
     },
     response = {"statusCode": 200,"headers": headers, "body": json.dumps(show)}
 
@@ -62,7 +63,7 @@ def add(event, context):
         }
         headers = {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': "true",
+            'Access-Control-Allow-Credentials': True,
         },
         response = {"statusCode": 200,"headers": headers, "body": json.dumps(resp_body)}
     else:

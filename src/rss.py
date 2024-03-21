@@ -40,7 +40,7 @@ def get(event, context):
         "headers": {
             'Content-Type': 'application/xml',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': "true",
+            'Access-Control-Allow-Credentials': True,
         },
         "body": body
     }
