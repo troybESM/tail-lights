@@ -14,7 +14,14 @@ def get_all(event, context):
         'Access-Control-Allow-Credentials': True,
         },
     logger.info(f"get_all shows {shows}")
-    response = {"statusCode": 200,"headers": headers, "body": json.dumps(shows)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": json.dumps(shows)
+    }
 
     return response
 
@@ -28,7 +35,14 @@ def get(event, context):
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': True,
     },
-    response = {"statusCode": 200,"headers": headers, "body": json.dumps(show)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": json.dumps(show)
+    }
 
     return response
 
