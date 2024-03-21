@@ -9,10 +9,22 @@ logger = Logger()
 @logger.inject_lambda_context
 def get_all(event, context):
     shows = query_gsi_pk_only(pk='SHOW', gsi='GSI1')
-
-    response = {"statusCode": 200, "body": json.dumps(shows)}
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': True,
+    },
+    logger.info(f"get_all shows {shows}")
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": json.dumps(shows)
+    }
 
     return response
+
 
 @logger.inject_lambda_context
 def get(event, context):
@@ -20,7 +32,14 @@ def get(event, context):
     logger.info(f"show_id = {show_id}")
     show = query_table(pk=show_id)
     logger.info(f"show = {show}")
-    response = {"statusCode": 200, "body": json.dumps(show)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': True,
+        },
+        "body": json.dumps(show)
+    }
 
     return response
 
@@ -43,7 +62,7 @@ def add(event, context):
     logger.info(f"add function event is {event}")
     body = json.loads(event.get('body'))
     logger.info(f"body is: {body}")
-    
+
     # Get Show Object
 
     # Add Show
@@ -53,8 +72,20 @@ def add(event, context):
         resp_body = {
             "message": f"Added show {response['added_item']}"
         }
-        response = {"statusCode": 200, "body": json.dumps(resp_body)}
+        response = {"statusCode": 200,
+                    "headers": {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': True,
+                    },
+                    "body": json.dumps(resp_body)
+                    }
+
     else:
-        response = {"statusCode": 451, "body": "Request Accepted, Failed adding show"}
+        response = {"statusCode": 451,
+                    "headers": {
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Credentials': True,
+                    },
+                    "body": "Request Accepted, Failed adding show"}
 
     return response

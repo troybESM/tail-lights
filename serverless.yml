@@ -83,6 +83,7 @@ functions:
             - http:
                   path: /shows
                   method: GET
+                  cors: true
     getShow:
         handler: src/shows.get
         description: Return show by id
@@ -92,6 +93,7 @@ functions:
             - http:
                   path: /shows/{show_id}
                   method: GET
+                  cors: true
     addShow:
         handler: src/shows.add
         description: Adds a show
@@ -101,6 +103,7 @@ functions:
             - http:
                   path: /shows/add
                   method: POST
+                  cors: true
     rssInsert:
         handler: src/rss.addEntry
         description: This function is an example of triggering off of items being added to dynamodb
@@ -133,6 +136,7 @@ functions:
             - http:
                   path: /shows/rss
                   method: GET
+                  cors: true
 #   # API Gateway
 #   Api:
 #     handler: src/api_handler.hello
